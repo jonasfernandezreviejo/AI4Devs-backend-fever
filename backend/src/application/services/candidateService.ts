@@ -3,6 +3,9 @@ import { validateCandidateData } from '../validator';
 import { Education } from '../../domain/models/Education';
 import { WorkExperience } from '../../domain/models/WorkExperience';
 import { Resume } from '../../domain/models/Resume';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export const addCandidate = async (candidateData: any) => {
     try {
@@ -61,5 +64,38 @@ export const findCandidateById = async (id: number): Promise<Candidate | null> =
     } catch (error) {
         console.error('Error al buscar el candidato:', error);
         throw new Error('Error al recuperar el candidato');
+    }
+};
+
+export const updateCandidateStage = async (candidateId: number, newStageId: number): Promise<any> => {
+    try {
+        // Buscar la aplicación del candidato
+        const application = await prisma.application.findFirst({
+            where: { candidateId }
+        });
+
+        if (!application) {
+            throw new Error('No se encontró ninguna aplicación para este candidato');
+        }
+
+        // Verificar que la nueva etapa existe
+        const interviewStep = await prisma.interviewStep.findUnique({
+            where: { id: newStageId }
+        });
+
+        if (!interviewStep) {
+            throw new Error('La etapa de entrevista especificada no existe');
+        }
+
+        // Actualizar la etapa actual de la aplicación
+        const updatedApplication = await prisma.application.update({
+            where: { id: application.id },
+            data: { currentInterviewStep: newStageId }
+        });
+
+        return updatedApplication;
+    } catch (error) {
+        console.error('Error al actualizar la etapa del candidato:', error);
+        throw error;
     }
 };

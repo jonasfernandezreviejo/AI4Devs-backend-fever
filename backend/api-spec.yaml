@@ -152,6 +152,94 @@ paths:
           description: Bad request (invalid input data)
         '500':
           description: Internal server error
+  
+  /candidates/{id}/stage:
+    put:
+      summary: Update candidate stage
+      description: Updates the interview stage of a specific candidate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the candidate to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stageId:
+                  type: integer
+                  description: ID of the new interview stage
+      responses:
+        '200':
+          description: Candidate stage updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      candidateId:
+                        type: integer
+                      positionId:
+                        type: integer
+                      currentInterviewStep:
+                        type: integer
+        '400':
+          description: Bad request (invalid input data or candidate/stage not found)
+        '500':
+          description: Internal server error
+  
+  /positions/{id}/candidates:
+    get:
+      summary: Get candidates for a position
+      description: Retrieves all candidates in process for a specific position
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the position
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of candidates for the position
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: ID of the candidate
+                    fullName:
+                      type: string
+                      description: Full name of the candidate
+                    current_interview_step:
+                      type: integer
+                      description: ID of the current interview step
+                    average_score:
+                      type: number
+                      nullable: true
+                      description: Average score of the candidate's interviews
+        '400':
+          description: Bad request (invalid position ID)
+        '500':
+          description: Internal server error
+  
   /upload:
     post:
       summary: Upload a file

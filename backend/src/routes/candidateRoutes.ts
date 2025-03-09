@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { addCandidate, getCandidateById } from '../presentation/controllers/candidateController';
+import { addCandidate, getCandidateById, updateCandidateStageController } from '../presentation/controllers/candidateController';
 
 const router = Router();
 
@@ -18,5 +18,8 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/:id', getCandidateById);
+
+// Nuevo endpoint para actualizar la etapa de un candidato
+router.put('/:id/stage', updateCandidateStageController);
 
 export default router;
